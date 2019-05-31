@@ -231,6 +231,7 @@ public class Dot : MonoBehaviour
         isColumnBomb = true;
         GameObject arrow = Instantiate(columnArrow, transform.position, Quaternion.identity);
         arrow.transform.parent = this.transform;
+        this.gameObject.tag = "Color";
     }
 
     public void MakeColorBomb() {

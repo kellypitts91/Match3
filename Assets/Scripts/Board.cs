@@ -39,6 +39,8 @@ public class Board : MonoBehaviour
     public int basePieceValue = 20;
     private int streakValue = 1;
     private ScoreManager scoreManager;
+    public float refillDelay = 0.5f;
+    public int[] scoreGoals;
 
     // Start is called before the first frame update
     void Start() {
@@ -262,7 +264,7 @@ public class Board : MonoBehaviour
                 }
             }
         }
-        yield return new WaitForSeconds(.4f);
+        yield return new WaitForSeconds(refillDelay * 0.5f);
         StartCoroutine(FillBoardCo());
     }
 
@@ -279,7 +281,7 @@ public class Board : MonoBehaviour
             }
             nullCount = 0;
         }
-        yield return new WaitForSeconds(.4f);
+        yield return new WaitForSeconds(refillDelay * 0.5f);
         StartCoroutine(FillBoardCo());
     }
 
@@ -294,6 +296,7 @@ public class Board : MonoBehaviour
 						maxIterations++;
 						dotToUse = Random.Range(0, dots.Length);
                     }
+                    maxIterations = 0;
                     GameObject piece = Instantiate(dots[dotToUse], tempPosition, Quaternion.identity);
                     allDots[i,j] = piece;
                     piece.GetComponent<Dot>().row = j;
@@ -318,11 +321,11 @@ public class Board : MonoBehaviour
 
     private IEnumerator FillBoardCo() {
         RefillBoard();
-        yield return new WaitForSeconds(.5f);
+        yield return new WaitForSeconds(refillDelay);
         while(MatchesOnBoard()) {
             streakValue++;
-            yield return new WaitForSeconds(.5f);
             DestroyMatches();
+            yield return new WaitForSeconds(2 * refillDelay);
         }
 
         findMatches.currentMatches.Clear();
@@ -332,7 +335,7 @@ public class Board : MonoBehaviour
             StartCoroutine(ShuffleBoard());
             Debug.Log("Deadlocked!!!");
         }
-        yield return new WaitForSeconds(.5f);
+        yield return new WaitForSeconds(refillDelay);
         currentState = GameState.move;
         streakValue = 1;
     }
@@ -409,7 +412,7 @@ public class Board : MonoBehaviour
     }
 
     private IEnumerator ShuffleBoard() {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(refillDelay);
         //Create a list of GameObjects
         List<GameObject> newBoard = new List<GameObject>();
         //Add every piece to the list
@@ -420,7 +423,7 @@ public class Board : MonoBehaviour
                 }
             }
         }
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(refillDelay);
         //for every spot on the board
          for(int i = 0; i < width; i++) {
             for(int j = 0; j < height; j++) {
