@@ -318,6 +318,7 @@ public class Board : MonoBehaviour
         yield return new WaitForSeconds(.5f);
 
         if(IsDeadlocked()) {
+            ShuffleBoard();
             Debug.Log("Deadlocked!!!");
         }
         currentState = GameState.move;
@@ -395,6 +396,44 @@ public class Board : MonoBehaviour
     }
 
     private void ShuffleBoard() {
-        
+        //Create a list of GameObjects
+        List<GameObject> newBoard = new List<GameObject>();
+        //Add every piece to the list
+        for(int i = 0; i < width; i++) {
+            for(int j = 0; j < height; j++) {
+                if(allDots[i, j] != null) {
+                    newBoard.Add(allDots[i, j]);
+                }
+            }
+        }
+        //for every spot on the board
+         for(int i = 0; i < width; i++) {
+            for(int j = 0; j < height; j++) {
+                //If the spot shouldn't be blank
+                if(!blankSpaces[i, j]) {
+                    //Pick a random number
+                    int pieceToUse = Random.Range(0, newBoard.Count);
+                    int maxIterations = 0;
+                    while(MatchesAt(i, j, newBoard[pieceToUse]) && maxIterations < 100) {
+                        pieceToUse = Random.Range(0, newBoard.Count);
+                        maxIterations++;
+                        Debug.Log(maxIterations);
+                    }
+                    maxIterations = 0;
+
+                    Dot piece = newBoard[pieceToUse].GetComponent<Dot>();
+                    //Assign the column and row to the piece
+                    piece.column = i;
+                    piece.row = j;
+                    //Fill in the dots array with this new piece
+                    allDots[i, j] = newBoard[pieceToUse];
+                    newBoard.Remove(newBoard[pieceToUse]);
+                }
+            }
+        }
+
+        if(IsDeadlocked()) {
+            ShuffleBoard();
+        }
     }
 }
