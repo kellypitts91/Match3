@@ -36,9 +36,13 @@ public class Board : MonoBehaviour
     private bool[,] blankSpaces;
     private BackgroundTile[,] breakableTiles;
     private FindMatches findMatches;
+    public int basePieceValue = 20;
+    private int streakValue = 1;
+    private ScoreManager scoreManager;
 
     // Start is called before the first frame update
     void Start() {
+        scoreManager = FindObjectOfType<ScoreManager>();
         breakableTiles = new BackgroundTile[width, height];
         findMatches = FindObjectOfType<FindMatches>();
         blankSpaces = new bool[width, height];
@@ -222,6 +226,7 @@ public class Board : MonoBehaviour
                                                 Quaternion.identity);
             Destroy(particle, .5f);
             Destroy(allDots[column, row]);
+            scoreManager.IncreaseScore(basePieceValue * streakValue);
             allDots[column, row] = null;
         }
     }
@@ -315,6 +320,7 @@ public class Board : MonoBehaviour
         RefillBoard();
         yield return new WaitForSeconds(.5f);
         while(MatchesOnBoard()) {
+            streakValue++;
             yield return new WaitForSeconds(.5f);
             DestroyMatches();
         }
@@ -328,6 +334,7 @@ public class Board : MonoBehaviour
         }
         yield return new WaitForSeconds(.5f);
         currentState = GameState.move;
+        streakValue = 1;
     }
 
     private void SwitchPieces(int column, int row, Vector2 direction) {
