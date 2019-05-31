@@ -72,7 +72,8 @@ public class Board : MonoBehaviour
             for(int j = 0; j < height; j++) {
                 if(!blankSpaces[i,j]) {
                     Vector2 tempPosition = new Vector2(i, j + offSet);
-                    GameObject backgroundTile = Instantiate(tilePrefab, tempPosition, Quaternion.identity) as GameObject;
+                    Vector2 tilePosition = new Vector2(i, j);
+                    GameObject backgroundTile = Instantiate(tilePrefab, tilePosition, Quaternion.identity) as GameObject;
                     backgroundTile.transform.parent = this.transform;
                     backgroundTile.name = "( " + i + ", " + j + " )";
                     int dotToUse = Random.Range(0, dots.Length);
@@ -280,9 +281,14 @@ public class Board : MonoBehaviour
     private void RefillBoard() {
         for(int i = 0; i < width; i++) {
             for(int j = 0; j < height; j++) {
-                if(allDots[i, j] == null && blankSpaces[i, j]) {
+                if(allDots[i, j] == null && !blankSpaces[i, j]) {
                     Vector2 tempPosition = new Vector2(i, j + offSet);
                     int dotToUse = Random.Range(0, dots.Length);
+                    int maxIterations = 0;
+					while(MatchesAt(i, j, dots[dotToUse]) && maxIterations < 100) {
+						maxIterations++;
+						dotToUse = Random.Range(0, dots.Length);
+                    }
                     GameObject piece = Instantiate(dots[dotToUse], tempPosition, Quaternion.identity);
                     allDots[i,j] = piece;
                     piece.GetComponent<Dot>().row = j;
@@ -315,12 +321,12 @@ public class Board : MonoBehaviour
 
         findMatches.currentMatches.Clear();
         currentDot = null;
-        yield return new WaitForSeconds(.5f);
 
         if(IsDeadlocked()) {
-            ShuffleBoard();
+            StartCoroutine(ShuffleBoard());
             Debug.Log("Deadlocked!!!");
         }
+        yield return new WaitForSeconds(.5f);
         currentState = GameState.move;
     }
 
@@ -395,7 +401,8 @@ public class Board : MonoBehaviour
         return true;
     }
 
-    private void ShuffleBoard() {
+    private IEnumerator ShuffleBoard() {
+        yield return new WaitForSeconds(0.5f);
         //Create a list of GameObjects
         List<GameObject> newBoard = new List<GameObject>();
         //Add every piece to the list
@@ -406,6 +413,7 @@ public class Board : MonoBehaviour
                 }
             }
         }
+        yield return new WaitForSeconds(0.5f);
         //for every spot on the board
          for(int i = 0; i < width; i++) {
             for(int j = 0; j < height; j++) {
@@ -433,7 +441,7 @@ public class Board : MonoBehaviour
         }
 
         if(IsDeadlocked()) {
-            ShuffleBoard();
+            StartCoroutine(ShuffleBoard());
         }
     }
 }
