@@ -34,3 +34,12 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+.vscode/
+*.asset
+*.json
+*.txt
+*.log
+*.meta
+*.mat
+*.prefab
+*.unity
