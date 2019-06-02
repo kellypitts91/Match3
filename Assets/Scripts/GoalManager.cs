@@ -14,49 +14,59 @@ public class BlankGoal {
 public class GoalManager : MonoBehaviour
 {
     public BlankGoal[] levelGoals;
+    public List<GoalPanel> currentGoals = new List<GoalPanel>();
     public GameObject goalPrefab;
     public GameObject goalIntroParent;
     public GameObject goalGameParent;
     // Start is called before the first frame update
     void Start()
     {
-        SetupIntroGoals();
+        SetupGoals();
     }
 
-    void SetupIntroGoals() {
+    void SetupGoals() {
         for(int i = 0; i < levelGoals.Length; i++) {
             //Create new goal panel at the goalIntroParent position
             GameObject goal = Instantiate(goalPrefab, goalIntroParent.transform.position, Quaternion.identity);
             goal.transform.SetParent(goalIntroParent.transform, false);
             //Set the image and text of the goal
             GoalPanel panel = goal.GetComponent<GoalPanel>();
-            
-            // for(int j = 0; j < goal.transform.childCount; j++) {
-            //     Transform currentItem = goal.transform.GetChild(j);
-            //     if(currentItem.CompareTag("goalImage")) {
-            //         panel.thisImage = currentItem.GetComponent<Image>();
-            //     }
-            //     Debug.Log(currentItem.name);
-            // }
 
             Debug.Log(levelGoals[i].goalSprite);
             Debug.Log(levelGoals[i].numberNeeded);
-            panel.thisSprite = levelGoals[i].goalSprite;
-            panel.thisString = "0/" + levelGoals[i].numberNeeded;
+            // panel.thisSprite = levelGoals[i].goalSprite;
+            // panel.thisString = "0/" + levelGoals[i].numberNeeded;
 
             //Create new goal panel at the goalGameParent position
             GameObject gameGoal = Instantiate(goalPrefab, goalGameParent.transform.position, Quaternion.identity);
             gameGoal.transform.SetParent(goalGameParent.transform, false);
 
             panel = gameGoal.GetComponent<GoalPanel>();
-            panel.thisSprite = levelGoals[i].goalSprite;
-            panel.thisString = "0/" + levelGoals[i].numberNeeded;
+            currentGoals.Add(panel);
+            // panel.thisSprite = levelGoals[i].goalSprite;
+            // panel.thisString = "0/" + levelGoals[i].numberNeeded;
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    public void UpdateGoals() {
+        int goalsCompleted = 0;
+        for(int i = 0; i <levelGoals.Length; i++) {
+            currentGoals[i].thisText.text = levelGoals[i].numberColected + "/" + levelGoals[i].numberNeeded; 
+            if(levelGoals[i].numberColected >= levelGoals[i].numberNeeded) {
+                goalsCompleted++;
+                currentGoals[i].thisText.text = levelGoals[i].numberNeeded + "/" + levelGoals[i].numberNeeded;
+            }
+        }
+        if(goalsCompleted >= levelGoals.Length) {
+            Debug.Log("You win!!");
+        }
+    }
+
+    public void CompareGoal(string goalToCompare) {
+        for(int i = 0; i < levelGoals.Length; i++) {
+            if(goalToCompare == levelGoals[i].matchValue) {
+                levelGoals[i].numberColected++;
+            }
+        }
     }
 }

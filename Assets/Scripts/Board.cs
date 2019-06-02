@@ -40,6 +40,7 @@ public class Board : MonoBehaviour
     private int streakValue = 1;
     private ScoreManager scoreManager;
     private SoundManager soundManager;
+    private GoalManager goalManager;
     public float refillDelay = 0.5f;
     public int[] scoreGoals;
 
@@ -47,6 +48,7 @@ public class Board : MonoBehaviour
     void Start() {
         scoreManager = FindObjectOfType<ScoreManager>();
         soundManager = FindObjectOfType<SoundManager>();
+        goalManager = FindObjectOfType<GoalManager>();
         breakableTiles = new BackgroundTile[width, height];
         findMatches = FindObjectOfType<FindMatches>();
         blankSpaces = new bool[width, height];
@@ -223,6 +225,11 @@ public class Board : MonoBehaviour
                 if(breakableTiles[column, row].hitPoints <= 0) {
                     breakableTiles[column, row] = null;
                 }
+            }
+
+            if(goalManager != null) {
+                goalManager.CompareGoal(allDots[column, row].tag.ToString());
+                goalManager.UpdateGoals();
             }
 
             //Does the sound manager exist?

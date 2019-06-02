@@ -16,7 +16,7 @@ public class GoalPanel : MonoBehaviour
     }
 
     void Setup() {
-        thisImage.sprite = thisSprite;
-        thisText.text = thisString;
+        // thisImage.sprite = thisSprite;
+        // thisText.text = thisString;
     }
 }
