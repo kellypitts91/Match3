@@ -14,6 +14,7 @@ public class Dot : MonoBehaviour
     public bool isMatched = false;
 
     private HintManager hintManager;
+    private EndGameManager endGameManager;
     public GameObject otherDot;
     private FindMatches findMatches;
     private Board board;
@@ -45,6 +46,7 @@ public class Dot : MonoBehaviour
         hintManager = FindObjectOfType<HintManager>();
         board = FindObjectOfType<Board>();
         findMatches = FindObjectOfType<FindMatches>();
+        endGameManager = FindObjectOfType<EndGameManager>();
         //targetX = (int)transform.position.x;
         //targetY = (int)transform.position.y;
         //column = targetX;
@@ -120,6 +122,11 @@ public class Dot : MonoBehaviour
                 board.currentDot = null;
                 board.currentState = GameState.move;
             } else {
+                if(endGameManager != null) {
+                    if(endGameManager.requirements.gameType == GameType.Moves) {
+                        endGameManager.DecreaseCounterValue();
+                    }
+                }
                 board.DestroyMatches();
             }
             //otherDot = null;
