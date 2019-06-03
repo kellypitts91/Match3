@@ -36,6 +36,8 @@ public class GoalManager : MonoBehaviour
 
             Debug.Log(levelGoals[i].goalSprite);
             Debug.Log(levelGoals[i].numberNeeded);
+            GetChildComponentsOfPrefab(goal, levelGoals[i]);
+            
             // panel.thisSprite = levelGoals[i].goalSprite;
             // panel.thisString = "0/" + levelGoals[i].numberNeeded;
 
@@ -45,6 +47,7 @@ public class GoalManager : MonoBehaviour
 
             panel = gameGoal.GetComponent<GoalPanel>();
             currentGoals.Add(panel);
+            GetChildComponentsOfPrefab(gameGoal, levelGoals[i]);
             // panel.thisSprite = levelGoals[i].goalSprite;
             // panel.thisString = "0/" + levelGoals[i].numberNeeded;
         }
@@ -73,6 +76,20 @@ public class GoalManager : MonoBehaviour
         for(int i = 0; i < levelGoals.Length; i++) {
             if(goalToCompare == levelGoals[i].matchValue) {
                 levelGoals[i].numberColected++;
+            }
+        }
+    }
+
+    private void GetChildComponentsOfPrefab(GameObject goal, BlankGoal levelGoal) {
+        for(int j = 0; j < goal.transform.childCount; j++) {
+            GameObject currentItem = goal.transform.GetChild(j).gameObject;
+            if(currentItem.GetComponentInChildren<Image>() != null) {
+                Image image = currentItem.GetComponentInChildren<Image>();
+                image.sprite = levelGoal.goalSprite;
+            }
+            if(currentItem.GetComponentInChildren<Text>() != null) {
+                Text text = currentItem.GetComponentInChildren<Text>();
+                text.text = "0/"+ levelGoal.numberNeeded;
             }
         }
     }

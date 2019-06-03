@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class GoalPanel : MonoBehaviour
 {
+    public GameObject gameObject;
     public Image thisImage;
     public Sprite thisSprite;
     public Text thisText;
@@ -16,7 +17,11 @@ public class GoalPanel : MonoBehaviour
     }
 
     void Setup() {
-        // thisImage.sprite = thisSprite;
+        // thisImage = GetComponent<Image>();
+        // //thisImage.sprite = GetComponent<SpriteRenderer>().sprite;
+        // Debug.Log(thisImage);
+        // thisText = GetComponent<Text>();
         // thisText.text = thisString;
+        // Debug.Log(thisText);
     }
 }

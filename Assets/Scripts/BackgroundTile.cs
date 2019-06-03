@@ -9,7 +9,7 @@ public class BackgroundTile : MonoBehaviour
     private GoalManager goalManager;
 
     private void Start() {
-        sprite  = GetComponent<SpriteRenderer>();
+        sprite = GetComponent<SpriteRenderer>();
         goalManager = FindObjectOfType<GoalManager>();
     }
 
