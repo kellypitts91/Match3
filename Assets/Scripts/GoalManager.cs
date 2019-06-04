@@ -18,6 +18,7 @@ public class GoalPanel {
     public Text text;
     public string textToDisplay;
 
+    override
     public string ToString() {
         return "image = " + image + 
                 ", sprite = " + sprite + 
@@ -34,11 +35,27 @@ public class GoalManager : MonoBehaviour
     public GameObject goalIntroParent;
     public GameObject goalGameParent;
     private EndGameManager endGameManager;
+    private Board board;
     // Start is called before the first frame update
     void Start()
     {
+        board = FindObjectOfType<Board>();
         endGameManager = FindObjectOfType<EndGameManager>();
+        GetGoals();
         SetupGoals();
+    }
+
+    void GetGoals() {
+        if(board != null) {
+            if(board.world != null) {
+                if(board.level < board.world.levels.Length) {
+                    Level tempLevel = board.world.levels[board.level];
+                    if(tempLevel != null) {
+                        levelGoals = tempLevel.levelGoals;
+                    }
+                }
+            }
+        }
     }
 
     void SetupGoals() {
@@ -62,11 +79,8 @@ public class GoalManager : MonoBehaviour
     public void UpdateGoals() {
         int goalsCompleted = 0;
         for(int i = 0; i < levelGoals.Length; i++) {
-            Debug.Log(levelGoals[i].numberColected + "/" + levelGoals[i].numberNeeded);
             currentGoals[i].text.text = levelGoals[i].numberColected + "/" + levelGoals[i].numberNeeded; 
-            Debug.Log("current goal text = " + currentGoals[i].text.text);
             if(levelGoals[i].numberColected >= levelGoals[i].numberNeeded) {
-                Debug.Log(goalsCompleted.ToString());
                 goalsCompleted++;
                 currentGoals[i].text.text = levelGoals[i].numberNeeded + "/" + levelGoals[i].numberNeeded;
             }
@@ -82,10 +96,8 @@ public class GoalManager : MonoBehaviour
     }
 
     public void CompareGoal(string goalToCompare) {
-        Debug.Log("goal to compare = " + goalToCompare);
         for(int i = 0; i < levelGoals.Length; i++) {
             if(goalToCompare == levelGoals[i].matchValue) {
-                Debug.Log("number colected increasing!");
                 levelGoals[i].numberColected++;
             }
         }

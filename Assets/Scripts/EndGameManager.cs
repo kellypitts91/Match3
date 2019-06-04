@@ -29,7 +29,19 @@ public class EndGameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start() {
         board = FindObjectOfType<Board>();
+        SetGameType();
         SetupGame();
+    }
+
+    void SetGameType() {
+        if(board.world != null) {
+            if(board.level < board.world.levels.Length) {
+                Level tempLevel = board.world.levels[board.level];
+                if(tempLevel != null) {
+                    requirements = tempLevel.requirements;
+                }
+            }
+        }
     }
 
     void SetupGame() {

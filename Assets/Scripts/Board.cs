@@ -25,15 +25,25 @@ public class TitleType {
 
 public class Board : MonoBehaviour
 {
+    [Header("Scritable Objects")]
+    public World world;
+    public int level;
+
     public GameState currentState = GameState.move;
+
+    [Header("Board Dimensions")]
     public int width;
     public int height;
     public int offSet;
+
+    [Header("Prefabs")]
     public GameObject tilePrefab;
     public GameObject breakableTilePrefab;
     public GameObject[] dots;
     public GameObject[,] allDots;
     public GameObject destroyEffect;
+
+    [Header("Layout")]
     public TitleType[] boardLayout;
     public Dot currentDot;
     private bool[,] blankSpaces;
@@ -46,6 +56,21 @@ public class Board : MonoBehaviour
     private GoalManager goalManager;
     public float refillDelay = 0.5f;
     public int[] scoreGoals;
+
+    void Awake() {
+        if(world != null) {
+            if(level < world.levels.Length) {
+                Level tempLevel = world.levels[level];
+                if(tempLevel != null) {
+                    width = tempLevel.width; 
+                    height = tempLevel.height; 
+                    dots = tempLevel.dots;
+                    scoreGoals = tempLevel.scoreGoals;
+                    boardLayout = tempLevel.boardLayout;
+                }
+            }
+        }
+    }
 
     // Start is called before the first frame update
     void Start() {
