@@ -11,6 +11,21 @@ public class BlankGoal {
     public string matchValue;
 }
 
+public class GoalPanel {
+
+    public Image image;
+    public Sprite sprite;
+    public Text text;
+    public string textToDisplay;
+
+    public string ToString() {
+        return "image = " + image + 
+                ", sprite = " + sprite + 
+                ", text = " + text +
+                ", textToDisplay = " + textToDisplay;
+    }
+}
+
 public class GoalManager : MonoBehaviour
 {
     public BlankGoal[] levelGoals;
@@ -32,34 +47,28 @@ public class GoalManager : MonoBehaviour
             GameObject goal = Instantiate(goalPrefab, goalIntroParent.transform.position, Quaternion.identity);
             goal.transform.SetParent(goalIntroParent.transform, false);
             //Set the image and text of the goal
-            GoalPanel panel = goal.GetComponent<GoalPanel>();
-
-            Debug.Log(levelGoals[i].goalSprite);
-            Debug.Log(levelGoals[i].numberNeeded);
-            GetChildComponentsOfPrefab(goal, levelGoals[i]);
+            GoalPanel panel = setupGoalsPanelWithChildren(goal, levelGoals[i]);
             
-            // panel.thisSprite = levelGoals[i].goalSprite;
-            // panel.thisString = "0/" + levelGoals[i].numberNeeded;
-
             //Create new goal panel at the goalGameParent position
             GameObject gameGoal = Instantiate(goalPrefab, goalGameParent.transform.position, Quaternion.identity);
             gameGoal.transform.SetParent(goalGameParent.transform, false);
 
-            panel = gameGoal.GetComponent<GoalPanel>();
+            panel = setupGoalsPanelWithChildren(gameGoal, levelGoals[i]);
             currentGoals.Add(panel);
-            GetChildComponentsOfPrefab(gameGoal, levelGoals[i]);
-            // panel.thisSprite = levelGoals[i].goalSprite;
-            // panel.thisString = "0/" + levelGoals[i].numberNeeded;
+            Debug.Log(panel.ToString());
         }
     }
 
     public void UpdateGoals() {
         int goalsCompleted = 0;
-        for(int i = 0; i <levelGoals.Length; i++) {
-            currentGoals[i].thisText.text = levelGoals[i].numberColected + "/" + levelGoals[i].numberNeeded; 
+        for(int i = 0; i < levelGoals.Length; i++) {
+            Debug.Log(levelGoals[i].numberColected + "/" + levelGoals[i].numberNeeded);
+            currentGoals[i].text.text = levelGoals[i].numberColected + "/" + levelGoals[i].numberNeeded; 
+            Debug.Log("current goal text = " + currentGoals[i].text.text);
             if(levelGoals[i].numberColected >= levelGoals[i].numberNeeded) {
+                Debug.Log(goalsCompleted.ToString());
                 goalsCompleted++;
-                currentGoals[i].thisText.text = levelGoals[i].numberNeeded + "/" + levelGoals[i].numberNeeded;
+                currentGoals[i].text.text = levelGoals[i].numberNeeded + "/" + levelGoals[i].numberNeeded;
             }
         }
         if(goalsCompleted >= levelGoals.Length) {
@@ -73,24 +82,37 @@ public class GoalManager : MonoBehaviour
     }
 
     public void CompareGoal(string goalToCompare) {
+        Debug.Log("goal to compare = " + goalToCompare);
         for(int i = 0; i < levelGoals.Length; i++) {
             if(goalToCompare == levelGoals[i].matchValue) {
+                Debug.Log("number colected increasing!");
                 levelGoals[i].numberColected++;
             }
         }
     }
 
-    private void GetChildComponentsOfPrefab(GameObject goal, BlankGoal levelGoal) {
-        for(int j = 0; j < goal.transform.childCount; j++) {
-            GameObject currentItem = goal.transform.GetChild(j).gameObject;
+    private GoalPanel setupGoalsPanelWithChildren(GameObject goal, BlankGoal levelGoal) {
+        Image image = null;
+        Text text = null;
+        for(int i = 0; i < goal.transform.childCount; i++) {
+            GameObject currentItem = goal.transform.GetChild(i).gameObject;
             if(currentItem.GetComponentInChildren<Image>() != null) {
-                Image image = currentItem.GetComponentInChildren<Image>();
+                image = currentItem.GetComponentInChildren<Image>();
                 image.sprite = levelGoal.goalSprite;
             }
             if(currentItem.GetComponentInChildren<Text>() != null) {
-                Text text = currentItem.GetComponentInChildren<Text>();
+                text = currentItem.GetComponentInChildren<Text>();
                 text.text = "0/"+ levelGoal.numberNeeded;
             }
         }
+        if(image != null && text != null) {
+            GoalPanel goalPanel = new GoalPanel();
+            goalPanel.image = image;
+            goalPanel.sprite = image.sprite;
+            goalPanel.text = text;
+            goalPanel.textToDisplay = text.text;
+            return goalPanel; 
+        }
+        return null;
     }
 }
