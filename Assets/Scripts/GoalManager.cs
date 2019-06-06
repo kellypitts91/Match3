@@ -52,6 +52,9 @@ public class GoalManager : MonoBehaviour
                     Level tempLevel = board.world.levels[board.level];
                     if(tempLevel != null) {
                         levelGoals = tempLevel.levelGoals;
+                        for(int i = 0; i < levelGoals.Length; i++) {
+                            levelGoals[i].numberColected = 0;
+                        }
                     }
                 }
             }
