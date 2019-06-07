@@ -6,19 +6,42 @@ using UnityEngine.SceneManagement;
 
 public class ConfirmPanel : MonoBehaviour
 {
+    [Header("Level Information")]
     public string sceneToLoad;
-    public Image[] stars;
     public int level;
+    private int starsActive;
+    private GameData gameData;
+    private int highScore;
+    
+
+    [Header("UI")]
+    public Image[] stars;
+    public Text highScoreText;
+    public Text starText;
 
     // Start is called before the first frame update
-    void Start() {
+    void OnEnable() {
+        gameData = FindObjectOfType<GameData>();
+        LoadData();
         ActivateStars();
+        SetText();
+    }
+
+    void LoadData() {
+        if(gameData != null) {
+            starsActive = gameData.saveData.stars[level-1];
+            highScore = gameData.saveData.highScores[level-1];
+        }
+    }
+
+    void SetText() {
+        highScoreText.text = highScore.ToString();
+        starText.text = starsActive + "/3";
     }
 
     void ActivateStars() {
-        //come back to this when the binary file is done.
-        for(int i = 0; i < stars.Length; i++) {
-            stars[i].enabled = false;
+        for(int i = 0; i < starsActive; i++) {
+            stars[i].enabled = true;
         }
     }
 
