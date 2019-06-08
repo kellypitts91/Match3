@@ -19,9 +19,18 @@ public class FindMatches : MonoBehaviour
 
     private List<GameObject> IsRowBomb(Dot dot1, Dot dot2, Dot dot3) {
         List<GameObject> currentDots = new List<GameObject>();
-        UnionRowPieces(dot1);
-        UnionRowPieces(dot2);
-        UnionRowPieces(dot3);
+        if(dot1.isRowBomb) {
+            currentDots.Union(GetRowPieces(dot1.row));
+        }
+        if(dot2.isRowBomb) {
+            currentDots.Union(GetRowPieces(dot2.row));
+        }
+        if(dot3.isRowBomb) {
+            currentDots.Union(GetRowPieces(dot3.row));
+        }
+        // UnionRowPieces(dot1);
+        // UnionRowPieces(dot2);
+        // UnionRowPieces(dot3);
         return currentDots;
     }
 
@@ -33,9 +42,18 @@ public class FindMatches : MonoBehaviour
 
     private List<GameObject> IsColumnBomb(Dot dot1, Dot dot2, Dot dot3) {
         List<GameObject> currentDots = new List<GameObject>();
-        UnionColumnPieces(dot1);
-        UnionColumnPieces(dot2);
-        UnionColumnPieces(dot3);
+         if(dot1.isColumnBomb) {
+            currentDots.Union(GetColumnPieces(dot1.column));
+        }
+         if(dot2.isColumnBomb) {
+            currentDots.Union(GetColumnPieces(dot2.column));
+        }
+         if(dot3.isColumnBomb) {
+            currentDots.Union(GetColumnPieces(dot3.column));
+        }
+        // UnionColumnPieces(dot1);
+        // UnionColumnPieces(dot2);
+        // UnionColumnPieces(dot3);
         return currentDots;
     }
 
@@ -60,9 +78,21 @@ public class FindMatches : MonoBehaviour
 
     private List<GameObject> IsAdjacentBomb(Dot dot1, Dot dot2, Dot dot3) {
         List<GameObject> currentDots = new List<GameObject>();
-        UnionAdjacentPieces(dot1);
-        UnionAdjacentPieces(dot2);
-        UnionAdjacentPieces(dot3);
+        if (dot1.isAdjacentBomb) {
+            currentDots.Union(GetAdjacentPieces(dot1.column, dot1.row));
+        }
+
+        if (dot2.isAdjacentBomb) {
+            currentDots.Union(GetAdjacentPieces(dot2.column, dot2.row));
+        }
+
+        if (dot3.isAdjacentBomb) {
+            currentDots.Union(GetAdjacentPieces(dot3.column, dot3.row));
+        }
+        
+        // UnionAdjacentPieces(dot1);
+        // UnionAdjacentPieces(dot2);
+        // UnionAdjacentPieces(dot3);
         return currentDots;
     }
 
@@ -88,8 +118,8 @@ public class FindMatches : MonoBehaviour
                             if(leftDot.tag == currentDot.tag && rightDot.tag == currentDot.tag) {
                                 currentMatches.Union(IsRowBomb(leftDotDot, currentDotDot, rightDotDot));
                                 currentMatches.Union(IsColumnBomb(leftDotDot, currentDotDot, rightDotDot));
-                                MatchNearbyPieces(leftDot, currentDot, rightDot);
                                 currentMatches.Union(IsAdjacentBomb(leftDotDot, currentDotDot, rightDotDot));
+                                MatchNearbyPieces(leftDot, currentDot, rightDot);
                             }
                         }
                     }
@@ -102,8 +132,8 @@ public class FindMatches : MonoBehaviour
                             if(upDot.tag == currentDot.tag && downDot.tag == currentDot.tag) {
                                 currentMatches.Union(IsColumnBomb(upDotDot, currentDotDot, downDotDot));
                                 currentMatches.Union(IsRowBomb(upDotDot, currentDotDot, downDotDot));
-                                MatchNearbyPieces(upDot, currentDot, downDot);
                                 currentMatches.Union(IsAdjacentBomb(upDotDot, currentDotDot, downDotDot));
+                                MatchNearbyPieces(upDot, currentDot, downDot);
                             }
                         }
                     }

@@ -24,6 +24,7 @@ public class GameData : MonoBehaviour
             DontDestroyOnLoad(this.gameObject);
             gameData = this;
         } else {
+            //this says ArgumentNullException: value cannot be null
             Destroy(this.gameObject);
         }
         fileName = Application.persistentDataPath + "/player.dat";
@@ -45,7 +46,6 @@ public class GameData : MonoBehaviour
         //Actually save the data in the file
         formatter.Serialize(file, data);
         file.Close();
-        Debug.Log("Saved");
     }
 
     public void Load() {
@@ -56,10 +56,17 @@ public class GameData : MonoBehaviour
             FileStream file = File.Open(fileName, FileMode.Open);
             saveData = formatter.Deserialize(file) as SaveData;
             file.Close();
-            Debug.Log("Loaded");
         } else {
-            Debug.Log("File does not exist");
+            saveData = new SaveData();
+            saveData.isActive = new bool[100];
+            saveData.stars = new int[100];
+            saveData.highScores = new int[100];
+            saveData.isActive[0] = true;
         }
+    }
+
+    private void OnApplicationQuit() {
+        Save();
     }
 
     private void OnDisable() {
