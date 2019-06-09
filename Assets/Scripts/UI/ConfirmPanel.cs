@@ -31,6 +31,8 @@ public class ConfirmPanel : MonoBehaviour
         if(gameData != null) {
             starsActive = gameData.saveData.stars[level-1];
             highScore = gameData.saveData.highScores[level-1];
+            Debug.Log("starsActive confirm = " + starsActive);
+            Debug.Log("highScore confirm = " + highScore);
         }
     }
 

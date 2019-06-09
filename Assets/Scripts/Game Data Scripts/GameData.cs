@@ -20,6 +20,7 @@ public class GameData : MonoBehaviour
 
     // Start is called before the first frame update
     void Awake() {
+        fileName = Application.persistentDataPath + "/player.dat";
         if(gameData == null) {
             DontDestroyOnLoad(this.gameObject);
             gameData = this;
@@ -27,7 +28,6 @@ public class GameData : MonoBehaviour
             //this says ArgumentNullException: value cannot be null
             Destroy(this.gameObject);
         }
-        fileName = Application.persistentDataPath + "/player.dat";
         Load();
     }
 
@@ -62,6 +62,7 @@ public class GameData : MonoBehaviour
             saveData.stars = new int[100];
             saveData.highScores = new int[100];
             saveData.isActive[0] = true;
+            Debug.Log("file does not exist");
         }
     }
 

@@ -18,8 +18,8 @@ public class Dot : MonoBehaviour
     public GameObject otherDot;
     private FindMatches findMatches;
     private Board board;
-    private Vector2 firstTouchPosition;
-    private Vector2 finalTouchPosition;
+    private Vector2 firstTouchPosition = Vector2.zero;
+    private Vector2 finalTouchPosition = Vector2.zero;
     private Vector2 tempPosition;
 
     [Header("Swipe Stuff")]
@@ -36,6 +36,8 @@ public class Dot : MonoBehaviour
     public GameObject colorBomb;
     public GameObject adjacentMarker;
 
+    private Animator anim;
+
     // Start is called before the first frame update
     void Start() {
         isColumnBomb = false;
@@ -48,6 +50,7 @@ public class Dot : MonoBehaviour
         //board = FindObjectOfType<Board>();
         findMatches = FindObjectOfType<FindMatches>();
         endGameManager = FindObjectOfType<EndGameManager>();
+        anim = GetComponent<Animator>();
     }
 
     //This is for testing and debug only
@@ -73,8 +76,8 @@ public class Dot : MonoBehaviour
             transform.position = Vector2.Lerp(transform.position, tempPosition, .6f);
             if(board.allDots[column, row] != this.gameObject) {
                 board.allDots[column, row] = this.gameObject;
+                findMatches.FindAllMatches();
             }
-            findMatches.FindAllMatches();
         } else {
             //Directly set the position
             tempPosition = new Vector2(targetX, transform.position.y);
@@ -87,8 +90,8 @@ public class Dot : MonoBehaviour
             transform.position = Vector2.Lerp(transform.position, tempPosition, .6f);
             if(board.allDots[column, row] != this.gameObject) {
                 board.allDots[column, row] = this.gameObject;
+                findMatches.FindAllMatches();
             }
-            findMatches.FindAllMatches();
         } else {
             //Directly set the position
             tempPosition = new Vector2(transform.position.x, targetY);
@@ -129,6 +132,10 @@ public class Dot : MonoBehaviour
     }
 
     private void OnMouseDown() {
+
+        if(anim != null) {
+            anim.SetBool("Touched", true);
+        }
         //Destroy the hint
         if(hintManager != null) {
             hintManager.DestroyHint();
@@ -140,6 +147,7 @@ public class Dot : MonoBehaviour
     }
 
     private void OnMouseUp() {
+        anim.SetBool("Touched", false);
         if(board.currentState == GameState.move) {
             finalTouchPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             CalculateAngle();

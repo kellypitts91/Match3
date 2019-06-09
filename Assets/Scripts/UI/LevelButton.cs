@@ -43,6 +43,7 @@ public class LevelButton : MonoBehaviour
             }
             //Decide how many stars to active
             starsActive = gameData.saveData.stars[level-1];
+            Debug.Log("starsActive level button = " + starsActive);
         }
     }
 

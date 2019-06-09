@@ -103,7 +103,6 @@ public class FindMatches : MonoBehaviour
     }
 
     private IEnumerator FindAllMatchesCo() {
-        yield return new WaitForSeconds(.2f);
         for(int i = 0; i < board.width; i++) {
             for(int j = 0; j < board.height; j++) {
                 GameObject currentDot = board.allDots[i,j];
@@ -140,6 +139,7 @@ public class FindMatches : MonoBehaviour
                 }
             }
         }
+        yield return null;
     }
 
     List<GameObject> GetAdjacentPieces(int column, int row) {
@@ -203,11 +203,11 @@ public class FindMatches : MonoBehaviour
         return dots;
     } 
 
-    public void CheckBombs() {
+    public void CheckBombs(MatchType matchType) {
         //Did the player move something?
         if(board.currentDot != null) {
             //Is the piece the moved matched?
-            if(board.currentDot.isMatched) {
+            if(board.currentDot.isMatched && board.currentDot.tag == matchType.color) {
                 //make it unmatched
                 board.currentDot.isMatched = false;
                 if((board.currentDot.swipeAngle > -45 && board.currentDot.swipeAngle <= 45) ||
@@ -221,7 +221,7 @@ public class FindMatches : MonoBehaviour
             else if(board.currentDot.otherDot != null) {
                 Dot otherDot = board.currentDot.otherDot.GetComponent<Dot>();
                 //Is the other dot matched?
-                if(otherDot.isMatched) {
+                if(otherDot.isMatched && otherDot.tag == matchType.color) {
                     //Make it unmatched
                     otherDot.isMatched = false;
                     if((board.currentDot.swipeAngle > -45 && board.currentDot.swipeAngle <= 45) ||
