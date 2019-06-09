@@ -167,14 +167,20 @@ public class Dot : MonoBehaviour
     }
 
     void MovePiecesActual(Vector2 direction) {
-        otherDot = board.allDots[column + (int)direction.x, row + (int)direction.y];
+        int x = (int)direction.x;
+        int y = (int)direction.y;
+        otherDot = board.allDots[column + x, row + y];
         SetPreviousPosition();
-        if(otherDot != null) {
-            otherDot.GetComponent<Dot>().column += -1 * (int)direction.x;
-            otherDot.GetComponent<Dot>().row += -1 * (int)direction.y;
-            column += (int)direction.x;
-            row += (int)direction.y;
-            StartCoroutine(CheckMoveCo());
+        if(board.lockTiles[column, row] == null && board.lockTiles[column + x, row + y] == null) {
+            if(otherDot != null) {
+                otherDot.GetComponent<Dot>().column += -1 * (int)direction.x;
+                otherDot.GetComponent<Dot>().row += -1 * (int)direction.y;
+                column += (int)direction.x;
+                row += (int)direction.y;
+                StartCoroutine(CheckMoveCo());
+            } else {
+                board.currentState = GameState.move;
+            }
         } else {
             board.currentState = GameState.move;
         }

@@ -13,6 +13,9 @@ public enum GameState {
 public enum TileKind {
     Breakable,
     Blank,
+    Lock,
+    Icing,
+    Slime,
     Normal
 }
 
@@ -45,6 +48,8 @@ public class Board : MonoBehaviour
     [Header("Prefabs")]
     public GameObject tilePrefab;
     public GameObject breakableTilePrefab;
+    public GameObject lockTilePrefab;
+    public GameObject icingTilePrefab;
     public GameObject[] dots;
     public GameObject[,] allDots;
     public GameObject destroyEffect;
@@ -53,6 +58,8 @@ public class Board : MonoBehaviour
     public TitleType[] boardLayout;
     private bool[,] blankSpaces;
     private BackgroundTile[,] breakableTiles;
+    public BackgroundTile[,] lockTiles;
+    public BackgroundTile[,] icingTiles;
     
     [Header("Match objects")]
     public MatchType matchType;
@@ -65,6 +72,14 @@ public class Board : MonoBehaviour
     private GoalManager goalManager;
     public float refillDelay = 0.5f;
     public int[] scoreGoals;
+
+    //todo sound keeps making noise after win or try again displays
+    //moves left or special pieces, should detonate
+    //row and column bombs should be swapable to cause damage in both directions
+    //tiles should not be able to fall if in a lock tile
+    //icing tiles background disapears when icing removed
+    //icing tiles don't get removed when match in a space that was an icing tile
+    //icing tiles don't drop (they should)
 
     void Awake() {
         if(PlayerPrefs.HasKey("Current Level")) {
@@ -90,6 +105,8 @@ public class Board : MonoBehaviour
         soundManager = FindObjectOfType<SoundManager>();
         goalManager = FindObjectOfType<GoalManager>();
         breakableTiles = new BackgroundTile[width, height];
+        lockTiles = new BackgroundTile[width, height];
+        icingTiles = new BackgroundTile[width, height];
         findMatches = FindObjectOfType<FindMatches>();
         blankSpaces = new bool[width, height];
         allDots = new GameObject[width, height];
@@ -116,12 +133,36 @@ public class Board : MonoBehaviour
         }
     }
 
+    private void GenerateLockTiles() {
+        for(int i = 0; i < boardLayout.Length; i++) {
+            if(boardLayout[i].tileKind == TileKind.Lock) {
+                //Create a "liquorice" tile at the position
+                Vector2 tempPosition = new Vector2(boardLayout[i].x, boardLayout[i].y);
+                GameObject tile = Instantiate(lockTilePrefab, tempPosition, Quaternion.identity);
+                lockTiles[boardLayout[i].x, boardLayout[i].y] = tile.GetComponent<BackgroundTile>();
+            }
+        }
+    }
+
+    private void GenerateIcingTiles() {
+        for(int i = 0; i < boardLayout.Length; i++) {
+            if(boardLayout[i].tileKind == TileKind.Icing) {
+                //Create a "icing" tile at the position
+                Vector2 tempPosition = new Vector2(boardLayout[i].x, boardLayout[i].y);
+                GameObject tile = Instantiate(icingTilePrefab, tempPosition, Quaternion.identity);
+                icingTiles[boardLayout[i].x, boardLayout[i].y] = tile.GetComponent<BackgroundTile>();
+            }
+        }
+    }
+
     private void SetUp() {
         GenerateBlankSpaces();
         GenerateBreakableTiles();
+        GenerateLockTiles();
+        GenerateIcingTiles();
         for(int i = 0; i < width; i++) {
             for(int j = 0; j < height; j++) {
-                if(!blankSpaces[i,j]) {
+                if(!blankSpaces[i,j] && !icingTiles[i,j]) {
                     Vector2 tempPosition = new Vector2(i, j + offSet);
                     Vector2 tilePosition = new Vector2(i, j);
                     GameObject backgroundTile = Instantiate(tilePrefab, tilePosition, Quaternion.identity) as GameObject;
@@ -293,6 +334,16 @@ public class Board : MonoBehaviour
                 }
             }
 
+            //Does a tile need to break
+            if(lockTiles[column, row] != null) {
+                lockTiles[column, row].TakeDamage(1);
+                if(lockTiles[column, row].hitPoints <= 0) {
+                    lockTiles[column, row] = null;
+                }
+            }
+
+            DamageIcing(column, row);
+
             if(goalManager != null) {
                 goalManager.CompareGoal(allDots[column, row].tag.ToString());
                 goalManager.UpdateGoals();
@@ -322,12 +373,46 @@ public class Board : MonoBehaviour
         for(int i = 0; i < width; i++) {
             for(int j = 0; j < height; j++) {
                 if(allDots[i, j] != null) {
-                    Debug.Log("Destroying matches now");
                     DestroyMatchesAt(i, j);
                 }
             }
         }
         StartCoroutine(DecreaseRowCo2());
+    }
+
+    private void DamageIcing(int column, int row) {
+        if(column > 0) {
+            if(icingTiles[column-1, row]) {
+                icingTiles[column-1, row].TakeDamage(1);
+                if(icingTiles[column-1, row].hitPoints <= 0) {
+                    icingTiles[column-1, row] = null;
+                }
+            }
+        }
+        if(column < width-1) {
+            if(icingTiles[column+1, row]) {
+                icingTiles[column+1, row].TakeDamage(1);
+                if(icingTiles[column+1, row].hitPoints <= 0) {
+                    icingTiles[column+1, row] = null;
+                }
+            }
+        }
+        if(row > 0) {
+            if(icingTiles[column, row-1]) {
+                icingTiles[column, row-1].TakeDamage(1);
+                if(icingTiles[column, row-1].hitPoints <= 0) {
+                    icingTiles[column, row-1] = null;
+                }
+            }
+        }
+        if(row < height-1) {
+            if(icingTiles[column, row+1]) {
+                icingTiles[column, row+1].TakeDamage(1);
+                if(icingTiles[column, row+1].hitPoints <= 0) {
+                    icingTiles[column, row+1] = null;
+                }
+            }
+        }
     }
 
     private IEnumerator DecreaseRowCo2() {

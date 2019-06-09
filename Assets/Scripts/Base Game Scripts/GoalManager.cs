@@ -75,7 +75,6 @@ public class GoalManager : MonoBehaviour
 
             panel = setupGoalsPanelWithChildren(gameGoal, levelGoals[i]);
             currentGoals.Add(panel);
-            Debug.Log(panel.ToString());
         }
     }
 
