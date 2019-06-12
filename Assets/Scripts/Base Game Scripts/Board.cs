@@ -88,7 +88,6 @@ public class Board : MonoBehaviour
     //have confirm screen when press exit game button
     //pause menu can be done better - restart game option
     //fix music playing on start
-    //special tiles have background tiles missing
 
     void Awake() {
         if(PlayerPrefs.HasKey("Current Level")) {
@@ -146,7 +145,7 @@ public class Board : MonoBehaviour
     private void GenerateLockTiles() {
         for(int i = 0; i < boardLayout.Length; i++) {
             if(boardLayout[i].tileKind == TileKind.Lock) {
-                //Create a "liquorice" tile at the position
+                //Create a "lock" tile at the position
                 Vector2 tempPosition = new Vector2(boardLayout[i].x, boardLayout[i].y);
                 GameObject tile = Instantiate(lockTilePrefab, tempPosition, Quaternion.identity);
                 lockTiles[boardLayout[i].x, boardLayout[i].y] = tile.GetComponent<BackgroundTile>();
@@ -184,12 +183,15 @@ public class Board : MonoBehaviour
         GenerateChocolateTiles();
         for(int i = 0; i < width; i++) {
             for(int j = 0; j < height; j++) {
-                if(!blankSpaces[i,j] && !icingTiles[i,j] && !chocolateTiles[i, j]) {
-                    Vector2 tempPosition = new Vector2(i, j + offSet);
+                if(!blankSpaces[i,j]) {
                     Vector2 tilePosition = new Vector2(i, j);
                     GameObject backgroundTile = Instantiate(tilePrefab, tilePosition, Quaternion.identity) as GameObject;
                     backgroundTile.transform.parent = this.transform;
                     backgroundTile.name = "( " + i + ", " + j + " )";
+                }
+
+                if(!blankSpaces[i,j] && !icingTiles[i,j] && !chocolateTiles[i, j]) {
+                     Vector2 tempPosition = new Vector2(i, j + offSet);
                     int dotToUse = Random.Range(0, dots.Length);
 
                     int maxIterations = 0;
@@ -207,6 +209,12 @@ public class Board : MonoBehaviour
                     allDots[i,j] = dot;
                 }
             }
+        }
+
+        //Deadlocked before start playing level
+        if(IsDeadlocked()) {
+            StartCoroutine(ShuffleBoard());
+            Debug.Log("Deadlocked!!!");
         }
     }
 
