@@ -21,12 +21,15 @@ public class FindMatches : MonoBehaviour
         List<GameObject> currentDots = new List<GameObject>();
         if(dot1.isRowBomb) {
             currentDots.Union(GetRowPieces(dot1.row));
+            board.BombRow(dot1.row);
         }
         if(dot2.isRowBomb) {
             currentDots.Union(GetRowPieces(dot2.row));
+            board.BombRow(dot2.row);
         }
         if(dot3.isRowBomb) {
             currentDots.Union(GetRowPieces(dot3.row));
+            board.BombRow(dot3.row);
         }
         // UnionRowPieces(dot1);
         // UnionRowPieces(dot2);
@@ -37,6 +40,7 @@ public class FindMatches : MonoBehaviour
     private void UnionRowPieces(Dot dot) {
         if(dot.isRowBomb) {
             currentMatches.Union(GetRowPieces(dot.row));
+            board.BombRow(dot.row);
         }
     }
 
@@ -44,12 +48,15 @@ public class FindMatches : MonoBehaviour
         List<GameObject> currentDots = new List<GameObject>();
          if(dot1.isColumnBomb) {
             currentDots.Union(GetColumnPieces(dot1.column));
+            board.BombColumn(dot1.column);
         }
          if(dot2.isColumnBomb) {
             currentDots.Union(GetColumnPieces(dot2.column));
+            board.BombColumn(dot2.column);
         }
          if(dot3.isColumnBomb) {
             currentDots.Union(GetColumnPieces(dot3.column));
+            board.BombColumn(dot3.column);
         }
         // UnionColumnPieces(dot1);
         // UnionColumnPieces(dot2);
@@ -60,6 +67,7 @@ public class FindMatches : MonoBehaviour
     private void UnionColumnPieces(Dot dot) {
         if(dot.isColumnBomb) {
             currentMatches.Union(GetColumnPieces(dot.column));
+            board.BombColumn(dot.column);
         }
     }
 
